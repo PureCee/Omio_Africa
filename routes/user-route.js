@@ -1,5 +1,10 @@
 const express = require("express");
-const { createAccount, getUser } = require("../controller/user-controller");
+const {
+  createAccount,
+  loginUser,
+  verifyAcc,
+  resendlink,
+} = require("../controller/user-controller");
 const user_route = express.Router();
 const { check } = require("express-validator");
 const user_model = require("../model/userModel");
@@ -31,6 +36,42 @@ user_route.post(
   createAccount
 );
 
-user_route.get("/me", Authorization, getUser);
+user_route.put(
+  "/login",
+  [
+    check("email")
+      .notEmpty()
+      .withMessage("Email field is empty")
+      .isEmail()
+      .withMessage("Email is not a valid email address"),
+    check("password")
+      .notEmpty()
+      .withMessage("Password field is required")
+      .isLength({
+        min: 5,
+        max: 30,
+      })
+      .withMessage("Invalid Password, please check again"),
+  ],
+  loginUser
+);
+
+user_route.post(
+  "/verify",
+  Authorization,
+  [
+    check("code")
+      .notEmpty()
+      .withMessage("please enter code")
+      .isLength({
+        max: 6,
+        min:4
+      })
+      .withMessage("Please enter your 6 digit code"),
+  ],
+  verifyAcc
+);
+
+user_route.put("/resend_link", Authorization, resendlink);
 
 module.exports = user_route;

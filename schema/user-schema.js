@@ -45,6 +45,10 @@ const user_schema = new Schema(
         ref: "Products",
       },
     ],
+    verified: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
     timestamps: true,
@@ -63,6 +67,10 @@ user_schema.pre("save", async function (next) {
   if (this.isModified("password")) {
     const hashed = await hashpassword(this.get("password"));
     this.set("password", hashed);
+  }
+  if (this.isModified("code")) {
+    const hashedCode = await hashpassword(this.get("code"));
+    this.set("code", hashedCode);
   }
   next();
 });

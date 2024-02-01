@@ -7,7 +7,6 @@ const generateToken = (payload) => {
 const decryptToken = (token) => {
   return new Promise((resolve, reject) => {
     try {
-      console.log(token);
       const jwtResult = jwt.verify(token, process.env.JWT_SECRET);
 
       resolve(jwtResult);

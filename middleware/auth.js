@@ -5,15 +5,9 @@ const Authorization = async (req, res, next) => {
     return next({ message: "Please login to continue" });
   }
   try {
-    let token = req.cookies ? req.cookies.omio : req.session.jwt;
-    
+    let token = req.cookies ? req.cookies.session : req.session.jwt;
     const payload = await decryptToken(token);
-    console.log(payload);
-    req.currentUser = {
-      email: payload.email,
-      id: payload.id,
-    };
-
+    req.user = { email: payload.email, id: payload.id };
     next();
   } catch (error) {
     return next({ message: error.message });

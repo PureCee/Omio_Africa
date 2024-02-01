@@ -20,14 +20,14 @@ const generateCode = () => {
 
 const hashCode = async (code) => {
   const salt = randomBytes(8).toString("hex");
-  const buf = await scryptAsync(code, salt, 8);
-  return `${buf.toString("hex")}$${salt}`;
+  const buf = await scryptAsync(password, salt, 64);
+  return `${buf.toString("hex")}.${salt}`;
 };
 
 const compare = async (savedCode, enteredCode) => {
-  const [enteredVal, salt] = savedCode.split("$");
-  const buf = await this.scryptAsync(enteredCode.toString(), salt, 8);
-  return enteredVal === buf.toString("hex");
+  const [hashedPassword, salt] = savedCode.split(".");
+  const buf = await scryptAsync(enteredCode, salt, 64);
+  return buf.toString("hex") === hashedPassword;
 };
 
 module.exports = { generateCode, hashCode, compare };
