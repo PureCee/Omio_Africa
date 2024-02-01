@@ -10,6 +10,9 @@ const Authorization = async (req, res, next) => {
     req.user = { email: payload.email, id: payload.id };
     next();
   } catch (error) {
+    if (error === "jwt must be provided") {
+      return next({ message: "Please login to continue" });
+    }
     return next({ message: error.message });
   }
 };
