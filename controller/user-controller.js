@@ -13,8 +13,8 @@ module.exports = {
       const user = new user_model({
         email: email.trim(),
         password: password.trim(),
-        lastname: lastName.trim(),
-        firstname: firstName.trim(),
+        lastName: lastName.trim(),
+        firstName: firstName.trim(),
       });
       const code = generateCode();
       user.code = code;

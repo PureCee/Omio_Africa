@@ -6,6 +6,7 @@ const cookieparser = require("cookie-parser");
 const session = require("express-session");
 // import required files
 const user_route = require("./routes/user-route");
+const product_route = require("./routes/product-route");
 
 // set up express
 const app = express();
@@ -16,6 +17,7 @@ app.set("trust proxy", true);
 // use required middleware
 
 app.use(cookieparser());
+app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cors());
 app.use(
@@ -32,6 +34,7 @@ app.use(
 );
 
 app.use("/user", user_route);
+app.use("/product", product_route);
 
 //catch any error not availabe at code context
 app.use((error, req, res, next) => {
