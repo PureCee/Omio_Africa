@@ -11,6 +11,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "cloudinary": "^2.0.0",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
     "crypto": "^1.0.1",
@@ -20,8 +21,11 @@
     "express-validator": "^7.0.1",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.1.1",
+    "multer": "^1.4.5-lts.1",
     "nodemailer": "^6.9.8",
-    "util": "^0.12.5"
+    "util": "^0.12.5",
+    "validate-date": "^2.1.0",
+    "validator": "^13.11.0"
   },
   "devDependencies": {
     "nodemon": "^3.0.3"

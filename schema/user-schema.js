@@ -26,23 +26,19 @@ const user_schema = new Schema(
     products: [
       {
         type: Schema.Types.ObjectId,
-        ref: "Products",
-      },
-      {
-        type: Schema.Types.ObjectId,
-        ref: "Products",
+        ref: "Product",
       },
     ],
     orders: [
       {
         type: Schema.Types.ObjectId,
-        ref: "Products",
+        ref: "Product",
       },
     ],
     carts: [
       {
         type: Schema.Types.ObjectId,
-        ref: "Products",
+        ref: "Product",
       },
     ],
     verified: {

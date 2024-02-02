@@ -13,6 +13,8 @@ module.exports = {
       const user = new user_model({
         email: email.trim(),
         password: password.trim(),
+        lastName: lastName.trim(),
+        firstName: firstName.trim(),
       });
       const code = generateCode();
       user.code = code;
@@ -102,6 +104,7 @@ module.exports = {
   resetPasswordActive: async (req, res, next) => {
     try {
       const { oldpassword, newpassword } = req.body;
+      Validator(req);
       const user = await user_model.findOne({ _id: req.id });
       if (!user) {
         return next({ message: "Account not found" });
@@ -114,10 +117,13 @@ module.exports = {
       await user.save();
       res.status(200).json({ status: "success" });
     } catch (error) {
+      if (error.field) {
+        return next(error);
+      }
       res.status(500).json({ message: error.message });
     }
   },
-  resendPasswordCode: async (req, res, next) => {
+  forgotPasswordCode: async (req, res, next) => {
     try {
       const { email } = req.body;
       const user = await user_model.findOne({ email: email.trim() });
@@ -128,8 +134,67 @@ module.exports = {
 
       user.code = code;
       //send code as mail again
+      await resendMail(email, code);
       await user.save();
-      res.status(200).json({ message: "success" });
+      res.status(200).json({ message: "code sent" });
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+  },
+  getUser: async (req, res, next) => {
+    try {
+      const user = await user_model
+        .findOne({ email: req.user.email })
+        .select("-password")
+        .select("-code")
+        .select("-createdAt")
+        .select("-updatedAt")
+        .select("-verified");
+      if (!user) {
+        return next({ message: "Account not found" });
+      }
+      res.status(200).json({ message: user });
+    } catch (error) {
+      res.status(200).json({ message: error.message });
+    }
+  },
+  resetPasswordOffline: async (req, res, next) => {
+    try {
+      Validator(req);
+      const { email, password, confirm_password } = req.body;
+      const user = await user_model.findOne({ email: email.trim() });
+      if (!user) {
+        return next({ message: "user not found try again later" });
+      }
+      user.password = password;
+      await user.save();
+      res.status(200).json({ message: "Password reset successful" });
+    } catch (error) {
+      if (error.field) {
+        return next(error);
+      }
+      res.status(500).json({ message: error.message });
+    }
+  },
+  logout: async (req, res, next) => {
+    try {
+      const user = await user_model.findById(req.user.id);
+      if (!user) {
+        return next({ message: "Please try again later" });
+      }
+      res.clearCookie("session");
+      res.status(200).json({ message: "logout successful" });
+    } catch (error) {}
+  },
+  deleteAccount: async (req, res, next) => {
+    try {
+      const user = await user_model.findById(req.user.id);
+      if (!user) {
+        return next({ message: "please try again later, user not found" });
+      }
+      await user_model.deleteOne({ _id: req.user.id });
+      res.clearCookie("session");
+      res.status(200).json({ message: "account deleted successfully" });
     } catch (error) {
       res.status(500).json({ message: error.message });
     }
