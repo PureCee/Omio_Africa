@@ -7,6 +7,7 @@ const session = require("express-session");
 // import required files
 const user_route = require("./routes/user-route");
 const product_route = require("./routes/product-route");
+const order_route = require("./routes/order-route");
 
 // set up express
 const app = express();
@@ -35,6 +36,7 @@ app.use(
 
 app.use("/user", user_route);
 app.use("/product", product_route);
+app.use("/order", order_route);
 
 //catch any error not availabe at code context
 app.use((error, req, res, next) => {
