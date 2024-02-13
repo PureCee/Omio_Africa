@@ -37,7 +37,10 @@ module.exports = {
     try {
       const { email, password } = req.body;
       Validator(req, res, next);
-      const user = await user_model.findOne({ email: email.trim() });
+      const user = await user_model.findOne({
+        email: email.trim(),
+        type: "normal",
+      });
       if (!user) {
         return next({ message: "Invalid Credentials" });
       }
@@ -195,6 +198,52 @@ module.exports = {
       await user_model.deleteOne({ _id: req.user.id });
       res.clearCookie("session");
       res.status(200).json({ message: "account deleted successfully" });
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+  },
+  failureOauthrizeGoogle: async (req, res, next) => {
+    try {
+      res.status(200).json({ message: "Authentication not successfull" });
+    } catch (error) {
+      res.status(200).json({ message: error.message });
+    }
+  },
+  successOauthrizeGoogle: async (req, res, next) => {
+    try {
+      if (!req.user) {
+        return next({ message: "Please try again" });
+      }
+      let { givenName: firstName, familyName: lastName } = req.user.name;
+      let email = req.user.emails[0].value;
+      let user = await user_model.findOne({ email: email, type: "oauth" });
+      if (user) {
+        const token = generateToken({
+          email: user.email,
+          id: user.id,
+        });
+        if (req.session) {
+          req.session.jwt = token;
+        }
+        res.cookie("session", token);
+        return res.status(200).json({ status: "success", token });
+      }
+      user = new user_model({
+        email,
+        lastName,
+        firstName,
+        type: "oauth",
+      });
+      const code = generateCode();
+      user.code = code;
+      token = generateToken({
+        email,
+        id: user.id,
+      });
+      await sendEmail(user.email, code);
+      await user.save();
+      res.cookie("session", token);
+      res.status(201).json({ message: "user created", token });
     } catch (error) {
       res.status(500).json({ message: error.message });
     }

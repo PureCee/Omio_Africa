@@ -10,6 +10,8 @@ const {
   resetPasswordOffline,
   logout,
   deleteAccount,
+  failureOauthrizeGoogle,
+  successOauthrizeGoogle,
 } = require("../controller/user-controller");
 const user_route = express.Router();
 const { check } = require("express-validator");
@@ -41,8 +43,7 @@ user_route.post(
       .isEmail()
       .withMessage("Please enter a valid email address")
       .custom(async (val, _) => {
-        const user = await user_model.findOne({ email: val });
-
+        const user = await user_model.findOne({ email: val, type: "normal" });
         if (user) {
           throw new Error("Email is currently in use");
         }
@@ -156,5 +157,8 @@ user_route.put("/logout", Authorization, logout);
 
 //delete account
 user_route.delete("/account", Authorization, deleteAccount);
+
+user_route.get("/failed", failureOauthrizeGoogle);
+user_route.get("/success", successOauthrizeGoogle);
 
 module.exports = user_route;

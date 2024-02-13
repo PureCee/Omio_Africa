@@ -8,6 +8,8 @@ const session = require("express-session");
 const user_route = require("./routes/user-route");
 const product_route = require("./routes/product-route");
 const order_route = require("./routes/order-route");
+require("./util/oauth");
+const passport = require("passport");
 
 // set up express
 const app = express();
@@ -32,6 +34,29 @@ app.use(
       httpOnly: true,
     },
   })
+);
+
+function isLoggedIn(req, res, next) {
+  req.user ? next() : res.sendStatus(401);
+}
+app.use(passport.initialize());
+app.use(passport.session());
+
+app.get(
+  "/auth/google",
+  passport.authenticate("google", { scope: ["profile"] })
+);
+
+app.get(
+  "/auth/google/callback",
+  passport.authenticate("google", {
+    failureRedirect: "/user/failed",
+    successRedirect: "/user/success",
+  }),
+  function (req, res) {
+    // Successful authentication, redirect home.
+    res.redirect("/");
+  }
 );
 
 app.use("/user", user_route);
