@@ -7,12 +7,11 @@ const user_schema = new Schema(
     email: {
       required: true,
       type: String,
-      unique: true,
     },
     password: {
-      required: true,
       type: String,
       min: 8,
+      required: false,
     },
     firstName: {
       type: String,
@@ -44,6 +43,11 @@ const user_schema = new Schema(
     verified: {
       type: Boolean,
       default: false,
+    },
+    type: {
+      type: String,
+      enum: ["oauth", "normal"],
+      default: "normal",
     },
   },
   {
