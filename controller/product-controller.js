@@ -8,6 +8,7 @@ const deleteFile = require("../util/delete");
 const validateDate = require("validate-date");
 const user_model = require("../model/userModel");
 const moment = require("moment");
+const cloudinary = require("cloudinary").v2.uploader;
 
 const fileStorage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -155,27 +156,25 @@ async function searchAndQuery(req, res, next) {
     let documents;
 
     const updatedDate = new Date();
-    updatedDate(updatedDate.getDate() + date ? date : 0);
 
+    updatedDate.setDate(
+      date ? updatedDate.getDate() + date : updatedDate.getDate() + 0
+    );
     documents = await product_model.countDocuments({
-      $match: {
-        $or: [
-          { expiry_date: { $gte: new Date(Date.now()), $lte: updatedDate } },
-          { name: { $regex: name, $options: "i" } },
-        ],
-      },
+      $or: [
+        { expiry_date: { $gte: new Date(), $lte: updatedDate } },
+        { name: { $regex: name ? name.toString() : "", $options: "i" } },
+      ],
     });
     query = await product_model
       .find({
-        $match: {
-          $or: [
-            { expiry_date: { $gte: new Date(Date.now()), $lte: updatedDate } },
-            { name: { $regex: name, $options: "i" } },
-          ],
-        },
+        $or: [
+          { expiry_date: { $gte: new Date(), $lte: updatedDate } },
+          { name: { $regex: name ? name.toString() : "", $options: "i" } },
+        ],
       })
       .skip(pageNumber - 1)
-      .limit(2);
+      .limit(10);
     let currentNumber = (page ? page : 1) * 2;
     currentIndex = currentNumber > documents ? documents : currentNumber;
     res
@@ -215,9 +214,13 @@ async function deleteProductByID(req, res, next) {
     if (!product) {
       return next({ message: "Product not found" });
     }
+    if (product.image) {
+      await cloudinary.destroy(product.image);
+    }
     await product_model.deleteOne({ _id: id });
-    res.status("Product deleted").json({ message: "Product deleted" });
+    res.status(200).json({ message: "Product deleted" });
   } catch (error) {
+    console.log(error);
     res.status(500).json({ message: error.message });
   }
 }
