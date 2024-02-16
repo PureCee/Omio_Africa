@@ -1,0 +1,87 @@
+//USER ROUTES
+("/user/new_user" {
+   firstName,
+    lastName,
+    email,
+    password
+}, createAccount);
+
+("/user/login" {
+    email,
+    password
+}, loginUser);
+
+("/use/verify" {
+    code
+}, verifyAcc);
+
+("/user/resend_link", Authorization, resendlink);
+
+("/user/reset_active_password", Authorization {
+    oldpassword,
+    newpassword
+} resetPasswordActive);
+
+("/user/reset_password" {
+    email
+}, forgotPasswordCode);
+
+("/user/me", Authorization, getUser);
+
+("/user/password" {
+    email,
+    password,
+    confirm_password
+}, resetPasswordOffline);
+
+("/user/logout", Authorization, logout);
+
+("/user/account", Authorization, deleteAccount);
+
+
+
+//PRODUCT ROUTES
+    ("/product/all", getAllProducts);
+
+    ("/product/new", Authorization, addProduct);
+
+    ("/product/search", searchAndQuery)
+
+    ("/product/:id", Authorization, updateProduct);
+
+    ("/product/five_days_deal", getFiveDaysDeal);
+
+    ("/product/ten_days_deal", getTenDaysDeal);
+
+
+
+//ORDER ROUTES
+    ("/order/"{
+        customer, 
+        customerAddress, 
+        orderItems, 
+        totalPrice
+    }, createOrder);
+
+    ("/order/:id/", getOrder)
+
+
+//CART ROUTES
+    ("/cart/add/:id", {productId}, Authorization, addToCart)
+
+    ("/cart/remove/:id", {productId}, Authorization, removeFromCart);
+
+    ("/cart/view", Authorization,viewCart);
+
+
+   
+
+
+
+
+
+
+
+app.use("/product", product_route);
+app.use("/order", order_route);
+app.use("/cart", cart_route);
