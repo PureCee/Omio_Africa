@@ -14,12 +14,12 @@ product_route.get("/search", productController.searchAndQuery);
 
 //update a particular product
 product_route.put("/:id", Authorization, productController.updateProduct);
-  //delete a particular product
-  product_route.delete(
-    "/:id",
-    Authorization,
-    productController.deleteProductByID
-  );
+//delete a particular product
+product_route.delete(
+  "/:id",
+  Authorization,
+  productController.deleteProductByID
+);
 
 //   get five days deal
 product_route.get("/five_days_deal", productController.getFiveDaysDeal);
@@ -27,5 +27,6 @@ product_route.get("/five_days_deal", productController.getFiveDaysDeal);
 
 product_route.get("/ten_days_deal", productController.getTenDaysDeal);
 
+product_route.get("/:id", Authorization, productController.getAllUserProduct);
 
 module.exports = product_route;

@@ -54,7 +54,7 @@ user_route.post(
       .notEmpty()
       .withMessage("Password field is required")
       .isStrongPassword()
-      .withMessage("Your password is not string enough"),
+      .withMessage("Your password is not strong enough"),
   ],
   createAccount
 );

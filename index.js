@@ -10,6 +10,7 @@ const product_route = require("./routes/product-route");
 const order_route = require("./routes/order-route");
 require("./util/oauth");
 const passport = require("passport");
+const cart_route = require("./routes/cart-route");
 
 // set up express
 const app = express();
@@ -62,6 +63,7 @@ app.get(
 app.use("/user", user_route);
 app.use("/product", product_route);
 app.use("/order", order_route);
+app.use("/cart", cart_route);
 
 //catch any error not availabe at code context
 app.use((error, req, res, next) => {

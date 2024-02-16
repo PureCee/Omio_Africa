@@ -36,8 +36,8 @@ const user_schema = new Schema(
     ],
     carts: [
       {
-        type: Schema.Types.ObjectId,
-        ref: "Product",
+        productId: { type: Schema.Types.ObjectId, ref: "Product" },
+        qty: { type: Number },
       },
     ],
     verified: {
@@ -48,6 +48,10 @@ const user_schema = new Schema(
       type: String,
       enum: ["oauth", "normal"],
       default: "normal",
+    },
+    cart_price: {
+      type: Number,
+      default: 0,
     },
   },
   {

@@ -4,7 +4,6 @@ const product_model = require("../model/productModel");
 const createOrder = async (req, res, next) => {
   const { customer, customerAddress, orderItems, totalPrice } = req.body;
   try {
-    console.log({ customer, customerAddress, orderItems, totalPrice });
     const orderItemsList = [];
     for (const orderItem of orderItems) {
       const product = await product_model.findById(orderItem.product);
