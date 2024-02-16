@@ -215,8 +215,12 @@ module.exports = {
         return next({ message: "Please try again" });
       }
       let { givenName: firstName, familyName: lastName } = req.user.name;
-      let email = req.user.emails[0].value;
-      let user = await user_model.findOne({ email: email, type: "oauth" });
+
+      let user = await user_model.findOne({
+        firstName,
+        type: "oauth",
+        lastName,
+      });
       if (user) {
         const token = generateToken({
           email: user.email,
@@ -228,8 +232,9 @@ module.exports = {
         res.cookie("session", token);
         return res.status(200).json({ status: "success", token });
       }
+      const email = new Date().getTime().toString();
       user = new user_model({
-        email,
+        email: email,
         lastName,
         firstName,
         type: "oauth",
@@ -240,10 +245,38 @@ module.exports = {
         email,
         id: user.id,
       });
-      await sendEmail(user.email, code);
+      // await sendEmail(user.email, code);
       await user.save();
       res.cookie("session", token);
       res.status(201).json({ message: "user created", token });
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+  },
+  updateAccount: async (req, res, next) => {
+    try {
+      const { email, firstName, lastName } = req.body;
+      Validator(req);
+      let user = await user_model.findOne({ email });
+      if (user) {
+        return next({
+          message: "email is in use by another user, try something else",
+        });
+      }
+      user = await user_model.findOne({ _id: req.user.id });
+      if (user.type == "oauth") {
+        user.email = email;
+        const code = generateCode();
+        await sendEmail(email, code);
+      } else {
+        user = {
+          ...user,
+          firstName,
+          lastName,
+        };
+      }
+      await user.save();
+      res.status(200).json({ message: "account updated successfully" });
     } catch (error) {
       res.status(500).json({ message: error.message });
     }

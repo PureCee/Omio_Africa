@@ -49,7 +49,7 @@ app.get(
 );
 
 app.get(
-  "/auth/google/callback",
+  "/api/auth/callback/google",
   passport.authenticate("google", {
     failureRedirect: "/user/failed",
     successRedirect: "/user/success",

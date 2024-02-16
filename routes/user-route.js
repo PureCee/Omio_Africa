@@ -12,6 +12,7 @@ const {
   deleteAccount,
   failureOauthrizeGoogle,
   successOauthrizeGoogle,
+  updateAccount,
 } = require("../controller/user-controller");
 const user_route = express.Router();
 const { check } = require("express-validator");
@@ -160,5 +161,20 @@ user_route.delete("/account", Authorization, deleteAccount);
 
 user_route.get("/failed", failureOauthrizeGoogle);
 user_route.get("/success", successOauthrizeGoogle);
+
+// update user acc
+
+user_route.put(
+  "/update",
+  [
+    check("email")
+      .isEmpty()
+      .withMessage("please email is required")
+      .isEmail()
+      .withMessage("Enter a valid Email address"),
+  ],
+  Authorization,
+  updateAccount
+);
 
 module.exports = user_route;
