@@ -1,0 +1,28 @@
+
+FROM node:alpine
+
+WORKDIR /app
+
+COPY /package.json /
+
+RUN npm install 
+
+
+ENV MONGOOSE=mongodb+srv://adeakanfea:24RG3EUTbr7JlLna@cluster0.szn5yyv.mongodb.net/?retryWrites=true&w=majority/omio
+ENV JWT_SECRET = ADEMOLA
+ENV ENVIRONMENT=DEVELOPMENT
+ENV COOKIE_SECRET = ADEMOLAJKDGCHSB1
+ENV USER_EMAIL =aadeakanfe@gmail.com
+ENV USER_PASSWORD=szqhvplsltzclmfs
+ENV PORT_VALUE=465
+ENV CLOUD_NAME = pamilerin123
+ENV CLOUD_KEY = 388246367613744
+ENV CLOUD_KEY_SECRET = IYp4tc7cAoGfxWuzqrQAeYWtrKQ
+ENV CLIENT_ID=880113935403-36ncuos0cgvjp79l5tmln14ecahq8j9t.apps.googleusercontent.com
+ENV CLIENT_SECRET=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
+
+
+
+COPY . .
+
+CMD [ "npm","start" ]
