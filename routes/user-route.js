@@ -13,6 +13,7 @@ const {
   failureOauthrizeGoogle,
   successOauthrizeGoogle,
   updateAccount,
+  verifyresetCode,
 } = require("../controller/user-controller");
 const user_route = express.Router();
 const { check } = require("express-validator");
@@ -122,6 +123,8 @@ user_route.put(
 );
 
 user_route.get("/me", Authorization, getUser);
+
+user_route.put("/verify_reset_code", verifyresetCode);
 
 user_route.post(
   "/password",

@@ -1,87 +1,266 @@
+BASE_URL = "https://api-omio.onrender.com"
+
 //USER ROUTES
-("/user/new_user" {
-   firstName,
-    lastName,
-    email,
-    password
-}, createAccount);
+{
+    desc:"create new user",
+    path: "/user/new_user",
+    payload: {
+        firstName,
+        lastName,
+        email,
+        password
+    },
+    method:"POST"
+};
 
-("/user/login" {
-    email,
-    password
-}, loginUser);
+{   
+    desc:"login user",
+    path: "/user/login",
+    payload: {
+        email,
+        password
+    },
+    method:"PUT"
+};
 
-("/use/verify" {
-    code
-}, verifyAcc);
+{   
+    dec:"verifiy your account",
+    path:"/user/verify"
+    payload: {
+        code(6 digit)
+    },
+    method:"POST",
+};
 
-("/user/resend_link", Authorization, resendlink);
+{
+    desc:"resend verification link",
+    path:"/user/resend_link",
+    requirement:"User must be authenticated",
+    method:"put"
+};
 
-("/user/reset_active_password", Authorization {
-    oldpassword,
-    newpassword
-} resetPasswordActive);
+{
+    desc:"reset password while active",
+    path:"/user/reset_active_password",
+    requirement:"User must be authenticated",
+    payload:{
+        oldpassword,
+        newpassword
+    },
+    method:"POST"
+};
 
-("/user/reset_password" {
-    email
-}, forgotPasswordCode);
+{
+    desc:"send forget password code",
+    path: "/user/reset_password",
+    payload:{
+        email
+    },
+    method:"PUT"
+}
 
-("/user/me", Authorization, getUser);
+{
+    desc:"verify forget password code",
+    path: "/user/verify_reset_code",
+    payload:{
+        email,
+        code
+    },
+    method:"PUT"
+}
 
-("/user/password" {
-    email,
-    password,
-    confirm_password
-}, resetPasswordOffline);
+{
+    desc:"reset password while not authenticated with email",
+    path:"/user/password",
+    payload:{
+        email,
+        password,
+        confirm_password
+    }
+    method:"POST",
+} 
 
-("/user/logout", Authorization, logout);
 
-("/user/account", Authorization, deleteAccount);
+{
+    desc:"get my details",
+    path:"/user/me"
+    requirement:"User must be authenticated,
+    method:"GET"
+}
+
+
+{
+    desc:"log out me",
+    path:"/user/logout"
+    requirement:"User must be authenticated,
+    method:"PUT"
+}
+
+
+{
+    desc:"delete account",
+    path:"/user/account"
+    requirement:"User must be authenticated,
+    method:"DELETE"
+}
+
+{
+    desc:"signin/signup with google",
+    path:"/auth/google"
+    method:"GET"
+}
 
 
 
-//PRODUCT ROUTES
-    ("/product/all", getAllProducts);
+    //PRODUCT ROUTES
+{   
+    desc:"get all products",
+    path:"/product/all",
+    queryParams: {
+        page
+    },
+    response: {
+        posts,
+        currentNumber, 
+        allPosts 
+    }
+    method:"GET"
+};
 
-    ("/product/new", Authorization, addProduct);
+{   
+    desc:"create new Product",
+    path:"/product/new",
+    body:FORMDATA
+    queryParams: {
+        page
+    },
+    payload: 
+        { 
+            name, 
+            price,
+            expiry_date,
+            description,
+            image
+        }
+    method:"GET"
+};
 
-    ("/product/search", searchAndQuery)
+{   
+    desc:"search and query data",
+    path:"/product/search",
+    queryParams: {
+        page:number,
+        name:string,
+        date:number(e.g 1. 2,3 days)
+    },
+    method:"GET",
+    response: {
+        posts,
+        currentNumber, 
+        allPosts 
+    }
+}
 
-    ("/product/:id", Authorization, updateProduct);
+{
+    desc:"get 5 days deal"
+    path: "/product/five_days_deal"
+    { 
+        posts,
+        currentNumber
+        allPosts: documents
+    },
+    method:"GET"
+}
 
-    ("/product/five_days_deal", getFiveDaysDeal);
 
-    ("/product/ten_days_deal", getTenDaysDeal);
+{
+    desc:"get 10 days deal"
+    path: "/product/ten_days_deal"
+    response:{ 
+        posts,
+        currentNumber(number)
+        allPosts(number)
+    },
+    method:"GET"
+}
+
+
+{
+    desc:"get all product by a particular user"
+    path: "/product/id"
+    response:{ 
+        posts,
+        currentNumber(number)
+        allPosts(number)
+    },
+    method:"GET"
+}
+
+{
+    desc:"delete my product"
+    path: "/product/id"
+    requirement:Authenticated
+    method:"DELETE"
+}
+
+{
+    desc:"update my product",
+    path:"/product/id",
+    requirement:"Authenticated,
+    payload:{
+        price:number
+    },
+    method:"PUT
+}
+
 
 
 
 //ORDER ROUTES
-    ("/order/"{
+{
+    descr:"create new order",
+    path:"/order/",
+    payload: {
         customer, 
         customerAddress, 
         orderItems, 
         totalPrice
-    }, createOrder);
+    } 
+    method:"Post"
+}
 
-    ("/order/:id/", getOrder)
+{
+    descr:"Get all orders",
+    path:"/order/id",
+    response:{
+        data
+    } 
+    method:"GET"
+}
+
 
 
 //CART ROUTES
-    ("/cart/add/:id", {productId}, Authorization, addToCart)
 
-    ("/cart/remove/:id", {productId}, Authorization, removeFromCart);
-
-    ("/cart/view", Authorization,viewCart);
-
-
-   
-
-
-
-
-
-
-
-app.use("/product", product_route);
-app.use("/order", order_route);
-app.use("/cart", cart_route);
+{
+    descr:"add product to cart"
+    path:"/cart/add/id",
+    requirement:"Authenticated"
+    method:"PUT"
+}
+{
+    descr:"remove cart items"
+    path:"/cart/remove/:id",
+    requirement:"Authenticated"
+    method:"PUT"
+}
+{
+    descr:"view cart items"
+    path:"/cart/view",
+    requirement:"Authenticated"
+    method:"GET",
+    response:{
+        cart:{product,quantity}
+        total_price:total price
+    }
+}

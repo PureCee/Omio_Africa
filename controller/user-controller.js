@@ -129,7 +129,7 @@ module.exports = {
   forgotPasswordCode: async (req, res, next) => {
     try {
       const { email } = req.body;
-      const user = await user_model.findOne({ email: email.trim() });
+      const user = await user_model.findOne({ email: email.trim(),type:"normal" });
       if (!user) {
         return next({ message: "Account not found" });
       }
@@ -165,7 +165,7 @@ module.exports = {
     try {
       Validator(req);
       const { email, password, confirm_password } = req.body;
-      const user = await user_model.findOne({ email: email.trim() });
+      const user = await user_model.findOne({ email: email.trim(),type:"normal" });
       if (!user) {
         return next({ message: "user not found try again later" });
       }
@@ -278,6 +278,29 @@ module.exports = {
       await user.save();
       res.status(200).json({ message: "account updated successfully" });
     } catch (error) {
+      if (error.field) {
+        return next(error);
+      }
+      res.status(500).json({ message: error.message });
+    }
+  },
+  verifyresetCode: async (req, res) => {
+    try {
+      validator(req)
+      const { email, code } = req.body;
+      const user = await user_model.findOne({ email, type: "normal" });
+      if (!user) {
+        return next({ message: "user not found" });
+      }
+      const match = await compare(user.code, code);
+      if (!match) {
+        return next({ message: "invalid code" });
+      }
+      res.status(200).json({ message: "success" });
+    } catch (error) {
+      if (error.field) {
+        return next(error);
+      }
       res.status(500).json({ message: error.message });
     }
   },
